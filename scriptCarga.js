@@ -4,6 +4,7 @@ $("#ErrorMessage").hide("slow");
 
 function showname () {
     try{
+        console.log(document.getElementById("file1"));
         var name = document.getElementById("file1").files[0].name; 
         LoadFile(name);
     }
