@@ -6,7 +6,6 @@ var toDelete = [];
 //Funcion para copar la taxonomia
 function CopyTaxonomy(){
 	newTaxonomy = nodesLeft;
-	console.log("Cantidad Inicial "+newTaxonomy.length);
 	//Obtenemos los valores de los porcentajes
 	var valueSplits =  document.getElementById('Select_Splts').value;
 	var valueMoves =  document.getElementById('Select_Moves').value;
@@ -59,7 +58,7 @@ function CopyTaxonomy(){
 		newTaxonomy.push(nuevosNodos[i]);
 	}
 	
-	console.log("Esta es la cantidad final "+newTaxonomy.length);
+	//console.log("Esta es la cantidad final "+newTaxonomy.length);
 	console.log(newTaxonomy);
 	createJson(newTaxonomy);
 	//createJson(nodesLeft);
@@ -176,22 +175,35 @@ var nuevosNodos = [];
 
 function GenerateSplits(valueSplits){
 	var porcentajeSplits = Math.round(disponibles * valueSplits);
+	console.log("Porcentaje de splits "+porcentajeSplits);
 	while(porcentajeSplits > 0){
+		var padre = false;
+		if (porcentajeSplits%2 == 0){
+			padre = true;
+		}
 		var posicion = sheetPositions[(Math.floor(Math.random() * (sheetPositions.length-1 - 0 + 1)) + 0)];
-		setSplits(newTaxonomy[posicion]);
+		setSplits(newTaxonomy[posicion],padre);
 		DeleteSheetPosition(posicion);
 		disponibles--;
 		porcentajeSplits--;
 	}
 }
 
-function setSplits(nodo){
+function setSplits(nodo,padre){
 	var nombre = nodo.name;
 	nodo.Synonym.push(nombre);
 	var random = Math.floor((Math.random() * 3) + 2); //random entre 2 y 4
-	for (var i = 0; i < random; i++){ 
+	for (var i = 0; i <= random; i++){ 
 		var nuevo = $.extend( {}, nodo );
 		nuevo.name = nombre+"_"+i;
+		if (padre == false){
+			console.log("////////////////////////////////////");
+			var nuevoNombre = searchParentMoves(nodo.parent.name);
+			console.log(nuevoNombre);
+			var padreNuevo = $.extend( {},searchNode(nuevoNombre));
+			nuevo.name = nuevo.name.replace(nodo.parent.name, nuevoNombre);
+			nuevo.parent = padreNuevo;
+		}
 		nuevo.Synonym = nodo.Synonym;
 		nuevosNodos.push(nuevo);
 	}
@@ -205,11 +217,12 @@ function setSplits(nodo){
 function searchParentMoves(parent){
 	SaveParentNames();
 	var posNombre = Math.floor(Math.random() * (nombresPadres.length-1 - 0 + 1)) + 0;
+	console.log(posNombre);
 	if (parent != nombresPadres[posNombre]){
 		return nombresPadres[posNombre];
 	}
 	else{
-		searchParentMoves(parent);
+		return searchParentMoves(parent);
 	}
 }
 
@@ -288,7 +301,6 @@ function GenerateNews(valueNews){
 function GenerateExclusions(valueExclusions){
 	var porcentajeExclusions = Math.round(disponibles * valueExclusions);
 	while(porcentajeExclusions > 0){
-		console.log("Oraleee pasaaa");
 		var posicion = sheetPositions[(Math.floor(Math.random() * (sheetPositions.length-1 - 0 + 1)) + 0)];
 		DeleteSheetPosition(posicion);
 		disponibles--;

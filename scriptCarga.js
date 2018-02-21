@@ -4,7 +4,6 @@ $("#ErrorMessage").hide("slow");
 
 function showname () {
     try{
-        console.log(document.getElementById("file1"));
         var name = document.getElementById("file1").files[0].name; 
         LoadFile(name);
     }
@@ -32,7 +31,6 @@ function LoadFile(name){
                     nodesLeft = nodes;
                 }
                 render(data, data);
-            console.log(nodesLeft);
             }
         });
     }
@@ -114,60 +112,50 @@ function UpdateCB_Splits(nombre){
 
 
     if (nombre == "Splits"){
-        console.log(cambio);
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(splits));
-        console.log(splits);
         acumulado = parseInt(acumulado) - parseInt(splits);
         splits = cambio;
         acumulado = parseInt(acumulado) + parseInt(splits);
-        console.log("Acumulado "+acumulado);
     }
      if (nombre == "Merges"){
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(merges));
         acumulado = parseInt(acumulado) - parseInt(merges);
         merges = cambio;
         acumulado = parseInt(acumulado) + parseInt(merges);
-        console.log("Acumulado "+acumulado);
     }
      if (nombre == "Moves"){
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(moves));
         acumulado = parseInt(acumulado) - parseInt(moves);
         moves = cambio;
         acumulado = parseInt(acumulado) + parseInt(moves);
-        console.log("Acumulado "+acumulado);
     }
     if (nombre == "Renames"){
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(renames));
         acumulado = parseInt(acumulado) - parseInt(renames);
         renames = cambio;
         acumulado = parseInt(acumulado) + parseInt(renames);
-        console.log("Acumulado "+acumulado);
     }
     if (nombre == "News"){
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(news));
         acumulado = parseInt(acumulado) - parseInt(news);
         news = cambio;
         acumulado = parseInt(acumulado) + parseInt(news);
-        console.log("Acumulado "+acumulado);
     }
     if (nombre == "Exclusions"){
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(exclusions));
         acumulado = parseInt(acumulado) - parseInt(exclusions);
         exclusions = cambio;
         acumulado = parseInt(acumulado) + parseInt(exclusions);
-        console.log("Acumulado "+acumulado);
     }
     if (nombre == "Typos"){
         congruence = parseInt(congruence) - (parseInt(cambio) - parseInt(typos));
         acumulado = parseInt(acumulado) - parseInt(typos);
         typos = cambio;
         acumulado = parseInt(acumulado) + parseInt(typos);
-        console.log("Acumulado "+acumulado);
     }
 
     if (acumulado <= 70){
         $("#ErrorMessage").hide("slow"); 
-        console.log("Esta es la congruencia "+congruence);
         document.getElementById("Select_Congruence").value = congruence;
     }
     else{
@@ -176,37 +164,30 @@ function UpdateCB_Splits(nombre){
             var actual = document.getElementById('Select_Splts').value;
             document.getElementById('Select_Splts').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
         if (nombre == "Merges"){
             document.getElementById('Select_Merges').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
         if (nombre == "Moves"){
             document.getElementById('Select_Moves').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
         if (nombre == "Renames"){
             document.getElementById('Select_Renames').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
         if (nombre == "News"){
             document.getElementById('Select_News').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
         if (nombre == "Exclusions"){
             document.getElementById('Select_Exclusions').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
         if (nombre == "Typos"){
             document.getElementById('Select_Typos').value = '';
              CalcularAcumulado();
-             console.log(acumulado);
         }
     }
     
