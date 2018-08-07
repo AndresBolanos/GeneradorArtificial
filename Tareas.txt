@@ -1,3 +1,0 @@
-Tengo dudas con los merges pues los q estan de sinonimos deben tener el mismo autor entonces
-deberia cambiar la taxonomia de la izquierda. Por ende debo descargar otra?
-

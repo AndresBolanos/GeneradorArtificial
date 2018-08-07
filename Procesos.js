@@ -1,3 +1,4 @@
+
 var newTaxonomy = [];
 var sheetPositions = [];
 var disponibles = 0;
@@ -46,11 +47,12 @@ function CopyTaxonomy(){
 	disponibles = sheetPositions.length;
 
 	GenerateSplits(valueSplits); //Funcion para generar la cantidad de splits de acuerdo al porcentaje
+	GenerateMerges(valueMerges);
 	GenerateMoves(valueMoves);
 	GenerateRenanes(valueRenames);
 	GenerateNews(valueNews);
 	GenerateExclusions(valueExclusions);
-	GenerateMerges(valueMerges);
+	
 
 	toDeleteNodes();
 	//Procedimiento para agregar los nuevos nodos al arreglo anterior
@@ -190,16 +192,22 @@ function GenerateSplits(valueSplits){
 }
 
 function setSplits(nodo,padre){
+	SaveParentNames();
 	var nombre = nodo.name;
 	nodo.Synonym.push(nombre);
 	var random = Math.floor((Math.random() * 3) + 2); //random entre 2 y 4
 	for (var i = 0; i <= random; i++){ 
 		var nuevo = $.extend( {}, nodo );
-		nuevo.name = nombre+"_"+i;
+		nuevo.name = nombre+".sp"+i;
 		if (padre == false){
 			console.log("////////////////////////////////////");
-			var nuevoNombre = searchParentMoves(nodo.parent.name);
-			console.log(nuevoNombre);
+			var nuevoNombre = searchParentMoves(nodo.parent, nodo.parent.parent.parent.name);
+			
+			/*
+			console.log("Nombre del nodo "+nombre);
+			console.log("Nombre del bis "+nodo.parent.parent.parent.name);
+			*/
+
 			var padreNuevo = $.extend( {},searchNode(nuevoNombre));
 			nuevo.name = nuevo.name.replace(nodo.parent.name, nuevoNombre);
 			nuevo.parent = padreNuevo;
@@ -214,15 +222,29 @@ function setSplits(nodo,padre){
 //Funciones para generar moves
  
 //Funcion para buscar un pare diferente
-function searchParentMoves(parent){
-	SaveParentNames();
+function searchParentMoves(parent, family){
 	var posNombre = Math.floor(Math.random() * (nombresPadres.length-1 - 0 + 1)) + 0;
-	console.log(posNombre);
-	if (parent != nombresPadres[posNombre]){
+	/*console.log("Nombre del padre "+ parent.name);
+	console.log("Nombre de la familia "+family);
+	console.log("Padre seleccionado "+nombresPadres[posNombre]);
+	search_family(searchNode(nombresPadres[posNombre]),family);*/
+	if (parent.name != nombresPadres[posNombre] && search_family(searchNode(nombresPadres[posNombre]),family)){
 		return nombresPadres[posNombre];
 	}
 	else{
-		return searchParentMoves(parent);
+		return searchParentMoves(parent,family);
+	}
+}
+
+function search_family(parent, family){
+	if (parent == undefined || parent == null){
+		return false;
+	}
+	else if (parent.name == family){
+		return true;
+	}
+	else{
+		 return search_family(parent.parent, family);
 	}
 }
 
@@ -239,12 +261,13 @@ function GenerateMoves(valueMoves){
 
 function setMoves(nodo){
 	var nombre = nodo.name;
-	var nuevoNombre = searchParentMoves(nodo.parent.name);
+	var nuevoNombre = searchParentMoves(nodo.parent.name, nodo.parent.parent.parent.name);
 	var nuevo = $.extend( {}, nodo );
 	nuevo.Synonym.push(nombre);
-	nuevo.name = nuevo.name.replace(nodo.parent.name, nuevoNombre);
+	nuevo.name = nuevo.name.replace(nodo.parent, nuevoNombre);
 	var padreNuevo = $.extend( {},searchNode(nuevoNombre));
 	nuevo.parent = padreNuevo;
+	nuevo.name = nuevo.name+" m";
 	nuevosNodos.push(nuevo);
 	toDelete.push(nodo.name);
 }
@@ -277,7 +300,7 @@ function GenerateRenanes(valueRenames){
 function setRenames(nodo){
 	var nombre = nodo.name;
 	nodo.Synonym.push(nombre);
-	nombre = nombre+"_R";
+	nombre = nombre+" r";
 	var nuevo = $.extend( {}, nodo );
 	nuevo.name = nombre;
 	nuevosNodos.push(nuevo);
@@ -326,7 +349,7 @@ function setNews(nodo,pos,nuevo){
 
 	//Hacemos la copia del nodo
 	var nuevo = $.extend( {}, nodo );
-	nuevo.name = nodo.parent.name+" nodo_N";
+	nuevo.name = nodo.parent.name+" n";
 	nuevo.author = author;
 	nuevo.record_scrutiny_date = date;
 	nuevo.Synonym = synonym;
@@ -349,7 +372,7 @@ function GenerateMerges(valueMerges){
 		var posicion = sheetPositions[(Math.floor(Math.random() * (sheetPositions.length-1 - 0 + 1)) + 0)];
 		DeleteSheetPosition(posicion);
 		var nodosRetorno = SearchMerges(newTaxonomy[posicion]);
-		if (nodosRetorno.length >= 1){
+		if (nodosRetorno.length >= 2 ){
 			nodosMerges.push(newTaxonomy[posicion]);
 			setMerges(newTaxonomy[posicion],nodosRetorno);
 		}
