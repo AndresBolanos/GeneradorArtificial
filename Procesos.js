@@ -61,7 +61,6 @@ function CopyTaxonomy(){
 	}
 	
 	//console.log("Esta es la cantidad final "+newTaxonomy.length);
-	console.log(newTaxonomy);
 	createJson(newTaxonomy);
 	//createJson(nodesLeft);
 }

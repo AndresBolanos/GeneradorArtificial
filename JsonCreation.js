@@ -6,8 +6,6 @@ var vistos = [];
 function createJson(arreglo){
 	estructura = arreglo;
 	createJsonAux(arreglo);
-	//console.log("Este es el final ");
-	console.log(finalJson);
   	var jsonObj = JSON.stringify(finalJson);
   	var final = "";
   	for (var i = 0; i < jsonObj.length; i++){
@@ -22,7 +20,6 @@ function createJson(arreglo){
   			
   		}
   	}
-  	//console.log(final);
 	var blob = new Blob([final], {type: "text/plain;charset=utf-8"});
   	saveAs(blob, "NewJson"+".json");
 }
@@ -39,22 +36,17 @@ function createJsonAux(arreglo){
 			item["author"] = arreglo[i].author;
 			item["record_scrutiny_date"] = arreglo[i].record_scrutiny_date;
 			if ((SelectParents(arreglo[i].name).length) > 0){
-				//console.log("Nodo "+arreglo[i].name);
-				//console.log(SelectParents(arreglo[i].name));
 				item["children"] = createJsonAux(SelectParents(arreglo[i].name));
 			}
 			json.push(item);
 		}
 	}
-	/*var jsonObj = JSON.stringify(json);
+	var jsonObj = JSON.stringify(json);
 	console.log(jsonObj);
-	//var blob = new Blob([jsonObj], {type: "text/plain;charset=utf-8"});
-  	//saveAs(blob, "MyFile"+".json");*/
   	
   	finalJson = json;
 	return json;
 }
-
 
 function SelectParents(name){
 	var hijos = [];
