@@ -59,7 +59,7 @@ function CopyTaxonomy(){
 	for (var i = 0; i < nuevosNodos.length; i++){
 		newTaxonomy.push(nuevosNodos[i]);
 	}
-	
+	console.log(newTaxonomy[0].c[0]);
 	//console.log("Esta es la cantidad final "+newTaxonomy.length);
 	createJson(newTaxonomy);
 	//createJson(nodesLeft);
@@ -71,7 +71,7 @@ var padres = [];
 function getPadres(nombre, nodos){
 	padres = [];
 	for (var i = 0; i < nodos.length; i++){
-			if (nodos[i].name == nombre){
+			if (nodos[i].n == nombre){
 				getPadresAux(nodos[i]);
 				return padres;
 			}
@@ -83,31 +83,31 @@ function getPadresAux(nodo){
 		return;
 	}
 	else{
-		nombresPadres.push(nodo.parent.name);
+		nombresPadres.push(nodo.parent.n);
 		getPadreName(nodo.parent);
 		getPadresAux(nodo.parent);
 	}
 }
 
 function getPadreName(nodo){
-	padres.push(nodo.name);
+	padres.push(nodo.n);
 }
 
 //Funcion para guardar el nombre de todos los papas en un arreglo
 function SaveParentNames(){
 	for(var i = 0; i < newTaxonomy.length; i++){
 		if(newTaxonomy[i].parent != undefined){
-			if ((searchParentName(newTaxonomy[i].parent.name) == false) && newTaxonomy[i].name.indexOf(' ') != -1){
-				nombresPadres.push(newTaxonomy[i].parent.name);
+			if ((searchParentName(newTaxonomy[i].parent.n) == false) && newTaxonomy[i].n.indexOf(' ') != -1){
+				nombresPadres.push(newTaxonomy[i].parent.n);
 			}
 		}
 	}
 }
 
 //Funcion para verificar si un nombre de padre ya esta en el arreglo
-function searchParentName(name){
+function searchParentName(n){
 	for(var i = 0; i < nombresPadres.length; i++){
-		if (nombresPadres[i] == name){
+		if (nombresPadres[i] == n){
 			return true
 		}
 	}
@@ -119,8 +119,8 @@ function searchParentName(name){
 //Funcion para guardar las posiciones de los q son hojas
 function getSheetPosition(){
 	for (var i = 0; i < newTaxonomy.length; i++){
-		if (newTaxonomy[i].children == null){
-			if(newTaxonomy[i].name.indexOf(' ') != -1){ //Verifica si es un nombre compuesto
+		if (newTaxonomy[i].c == null){
+			if(newTaxonomy[i].n.indexOf(' ') != -1){ //Verifica si es un nombre compuesto
 				sheetPositions.push(i);
 			}
 		}
@@ -144,7 +144,7 @@ function DeleteSheetPosition(value){
 function DeleteNodeTaxnomy(nodes,value){
 	var nuevoarreglo = [];
 	for (var i = 0; i < nodes.length; i++){
-		if (nodes[i].name != value){
+		if (nodes[i].n != value){
 			nuevoarreglo.push(nodes[i]);
 		}
 	}
@@ -157,7 +157,7 @@ function toDeleteNodes(){
 	for (var i = 0; i < newTaxonomy.length; i++){
 		var esta = false;
 		for (var j = 0; j < toDelete.length; j++){
-			if (toDelete[j] == newTaxonomy[i].name){
+			if (toDelete[j] == newTaxonomy[i].n){
 				esta = true;
 			}
 		}
@@ -178,6 +178,7 @@ function GenerateSplits(valueSplits){
 	var porcentajeSplits = Math.round(disponibles * valueSplits);
 	console.log("Porcentaje de splits "+porcentajeSplits);
 	while(porcentajeSplits > 0){
+
 		var padre = false;
 		if (porcentajeSplits%2 == 0){
 			padre = true;
@@ -192,29 +193,29 @@ function GenerateSplits(valueSplits){
 
 function setSplits(nodo,padre){
 	SaveParentNames();
-	var nombre = nodo.name;
-	nodo.Synonym.push(nombre);
+	var nombre = nodo.n;
+	nodo.s.push(nombre);
 	var random = Math.floor((Math.random() * 3) + 2); //random entre 2 y 4
 	for (var i = 0; i <= random; i++){ 
 		var nuevo = $.extend( {}, nodo );
-		nuevo.name = nombre+".sp"+i;
+		nuevo.n = nombre+".sp"+i;
 		if (padre == false){
 			console.log("////////////////////////////////////");
-			var nuevoNombre = searchParentMoves(nodo.parent, nodo.parent.parent.parent.name);
+			var nuevoNombre = searchParentMoves(nodo.parent, nodo.parent.parent.parent.n);
 			
 			/*
 			console.log("Nombre del nodo "+nombre);
-			console.log("Nombre del bis "+nodo.parent.parent.parent.name);
+			console.log("Nombre del bis "+nodo.parent.parent.parent.n);
 			*/
 
 			var padreNuevo = $.extend( {},searchNode(nuevoNombre));
-			nuevo.name = nuevo.name.replace(nodo.parent.name, nuevoNombre);
+			nuevo.n = nuevo.n.replace(nodo.parent.n, nuevoNombre);
 			nuevo.parent = padreNuevo;
 		}
-		nuevo.Synonym = nodo.Synonym;
+		nuevo.s = nodo.s;
 		nuevosNodos.push(nuevo);
 	}
-	toDelete.push(nodo.name);
+	toDelete.push(nodo.n);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -223,11 +224,11 @@ function setSplits(nodo,padre){
 //Funcion para buscar un pare diferente
 function searchParentMoves(parent, family){
 	var posNombre = Math.floor(Math.random() * (nombresPadres.length-1 - 0 + 1)) + 0;
-	/*console.log("Nombre del padre "+ parent.name);
+	/*console.log("Nombre del padre "+ parent.n);
 	console.log("Nombre de la familia "+family);
 	console.log("Padre seleccionado "+nombresPadres[posNombre]);
 	search_family(searchNode(nombresPadres[posNombre]),family);*/
-	if (parent.name != nombresPadres[posNombre] && search_family(searchNode(nombresPadres[posNombre]),family)){
+	if (parent.n != nombresPadres[posNombre] && search_family(searchNode(nombresPadres[posNombre]),family)){
 		return nombresPadres[posNombre];
 	}
 	else{
@@ -239,7 +240,7 @@ function search_family(parent, family){
 	if (parent == undefined || parent == null){
 		return false;
 	}
-	else if (parent.name == family){
+	else if (parent.n == family){
 		return true;
 	}
 	else{
@@ -259,21 +260,21 @@ function GenerateMoves(valueMoves){
 }
 
 function setMoves(nodo){
-	var nombre = nodo.name;
-	var nuevoNombre = searchParentMoves(nodo.parent.name, nodo.parent.parent.parent.name);
+	var nombre = nodo.n;
+	var nuevoNombre = searchParentMoves(nodo.parent.n, nodo.parent.parent.parent.n);
 	var nuevo = $.extend( {}, nodo );
-	nuevo.Synonym.push(nombre);
-	nuevo.name = nuevo.name.replace(nodo.parent, nuevoNombre);
+	nuevo.s.push(nombre);
+	nuevo.n = nuevo.n.replace(nodo.parent, nuevoNombre);
 	var padreNuevo = $.extend( {},searchNode(nuevoNombre));
 	nuevo.parent = padreNuevo;
-	nuevo.name = nuevo.name+" m";
+	nuevo.n = nuevo.n+" m";
 	nuevosNodos.push(nuevo);
-	toDelete.push(nodo.name);
+	toDelete.push(nodo.n);
 }
 
-function searchNode(name){
+function searchNode(n){
 	for (var i = 0; i < nodesLeft.length; i++){
-		if (nodesLeft[i].name == name){
+		if (nodesLeft[i].n == n){
 			return nodesLeft[i];
 		}
 	}
@@ -297,13 +298,13 @@ function GenerateRenanes(valueRenames){
 }
 
 function setRenames(nodo){
-	var nombre = nodo.name;
-	nodo.Synonym.push(nombre);
+	var nombre = nodo.n;
+	nodo.s.push(nombre);
 	nombre = nombre+" r";
 	var nuevo = $.extend( {}, nodo );
-	nuevo.name = nombre;
+	nuevo.n = nombre;
 	nuevosNodos.push(nuevo);
-	toDelete.push(nodo.name);
+	toDelete.push(nodo.n);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -327,7 +328,7 @@ function GenerateExclusions(valueExclusions){
 		DeleteSheetPosition(posicion);
 		disponibles--;
 		porcentajeExclusions--;
-		toDelete.push(newTaxonomy[posicion].name);
+		toDelete.push(newTaxonomy[posicion].n);
 	}
 }
 
@@ -337,21 +338,21 @@ function setNews(nodo,pos,nuevo){
 	var nombrePadre = nombresPadres[indexPadre];
 
 	//Definimos el autor
-	var author = "System";
+	var a = "System";
 
 	//Definimos la fecha de creacion
 	var date = new Date();
 	date = date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear();
 
 	//Definimos los sinonimos
-	var synonym = [];
+	var s = [];
 
 	//Hacemos la copia del nodo
 	var nuevo = $.extend( {}, nodo );
-	nuevo.name = nodo.parent.name+" n";
-	nuevo.author = author;
-	nuevo.record_scrutiny_date = date;
-	nuevo.Synonym = synonym;
+	nuevo.n = nodo.parent.n+" n";
+	nuevo.a = a;
+	nuevo.rsd = date;
+	nuevo.s = s;
 	if (nuevo == true){
 		nuevosNodos.push(nuevo); //Lo agregamos a la nueva lista de nodos
 	}
@@ -388,7 +389,7 @@ function SearchMerges (node){
 	var cont = 1;
 	var nodosRetorno = [];
 	for (var i = 0; i < sheetPositions.length; i++){
-		if (newTaxonomy[sheetPositions[i]].parent.name == node.parent.name){
+		if (newTaxonomy[sheetPositions[i]].parent.n == node.parent.n){
 			nodosRetorno.push(newTaxonomy[sheetPositions[i]]);
 			DeleteSheetPosition(sheetPositions[i]);
 			if (nodosRetorno.length >= 3){
@@ -400,15 +401,15 @@ function SearchMerges (node){
 }
 
 function setMerges(nodo,nodos){
-	var nombre = nodo.name;
+	var nombre = nodo.n;
 	for (var i = 0; i < nodos.length; i++){
-		nodo.Synonym.push(nodos[i].name);
-		toDelete.push(nodos[i].name);	
+		nodo.s.push(nodos[i].n);
+		toDelete.push(nodos[i].n);	
 	}
-	nodo.Synonym.push(nodo.name);
+	nodo.s.push(nodo.n);
 	var nuevo = $.extend( {}, nodo );
-	nuevo.name = nombre;
-	nuevo.Synonym = nodo.Synonym;
+	nuevo.n = nombre;
+	nuevo.s = nodo.s;
 	nuevosNodos.push(nuevo);
-	toDelete.push(nodo.name);
+	toDelete.push(nodo.n);
 }

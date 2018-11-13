@@ -15,15 +15,18 @@
             childIndent = 20,
             size;
 
+        hierarchy.children(function(d) {
+           return d.c;
+       });
+
         var treelist = function (d, i) {
             var nodes = hierarchy.call(this, d, i),
                 root = nodes[0];
-
             function visit(f, t, index, parent) {
                 if (t) {
                     f(t, index, parent);
                 }
-                var children = t.children;
+                var children = t.c;
                 if (children && children.length) {
                     children.forEach(function (child, ci) {
                         visit(f, child, ci, t);

@@ -28,15 +28,15 @@ function createJsonAux(arreglo){
 	var json = [];
 	//Creamos el nodo raiz
 	for (var i = 0; i < arreglo.length; i++){
-		if (isView(arreglo[i].name) == false){
-			vistos.push(arreglo[i].name);
+		if (isView(arreglo[i].n) == false){
+			vistos.push(arreglo[i].n);
 			var item = {};
-			item["name"] = arreglo[i].name;
-			item["Synonym"] = arreglo[i].Synonym;
-			item["author"] = arreglo[i].author;
-			item["record_scrutiny_date"] = arreglo[i].record_scrutiny_date;
-			if ((SelectParents(arreglo[i].name).length) > 0){
-				item["children"] = createJsonAux(SelectParents(arreglo[i].name));
+			item["n"] = arreglo[i].n;
+			item["s"] = arreglo[i].s;
+			item["a"] = arreglo[i].a;
+			item["rsd"] = arreglo[i].rsd;
+			if ((SelectParents(arreglo[i].n).length) > 0){
+				item["c"] = createJsonAux(SelectParents(arreglo[i].n));
 			}
 			json.push(item);
 		}
@@ -48,11 +48,11 @@ function createJsonAux(arreglo){
 	return json;
 }
 
-function SelectParents(name){
+function SelectParents(n){
 	var hijos = [];
 	for (var i = 0; i < estructura.length; i++){
 		if (estructura[i].parent != undefined){
-			if (estructura[i].parent.name == name){
+			if (estructura[i].parent.n == n){
 				var nuevo = $.extend( {}, estructura[i]);
 				hijos.push(nuevo);
 			}
@@ -61,9 +61,9 @@ function SelectParents(name){
 	return hijos;
 }
 
-function isView(name){
+function isView(n){
 	for (var i = 0; i < vistos.length; i++){
-		if (vistos[i] == name){
+		if (vistos[i] == n){
 			return true;
 		}
 	}
